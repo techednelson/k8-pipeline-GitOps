@@ -1,32 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: flaskdemo
   name: flaskdemo
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: flaskdemo
-  replicas: 1
+  strategy: {}
   template:
     metadata:
       labels:
         app: flaskdemo
     spec:
       containers:
-      - name: flaskdemo
-        image: webtechnelson/ci-test-image:5
-        ports:
-          - containerPort: 5000
-
+        - image: webtechnelson/ci-test-image:5
+          name: flaskdemo
+          resources: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: flaskdemo-service
+  name: lb-service
+  labels:
+    app: lb-service
 spec:
-  selector:
-    app: flaskdemo
+  type: LoadBalancer
   ports:
     - port: 80
-      protocol: TCP
       targetPort: 5000
+  selector:
+    app: flaskdemo
